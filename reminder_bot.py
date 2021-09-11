@@ -34,12 +34,13 @@ async def start_private(message: types.Message):
 
 @dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), filters.ChatTypeFilter('supergroup'))
 async def start_chat(message: types.Message):
-    data = Data(message.chat.id)
     with open('database.json', 'r+') as db:
         dict_f = jload(db.read())
         if str(message.chat.id) in dict_f.keys():
+            Data(message.chat.id)
             await message.answer(ALREADY_ADDED, reply_markup=SETTINGS_KEYBOARD)
         else:
+            data = Data(message.chat.id)
             t = eval(data.time).strftime('%H:%M')
             processes.append(Prompt(['py', 'schedule.py', t, str(message.chat.id)]))
             await message.answer(CONGRATS, reply_markup=SETTINGS_KEYBOARD)
