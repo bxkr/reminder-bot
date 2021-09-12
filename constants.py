@@ -1,7 +1,12 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram import Bot
 
-API_TOKEN = open('token.txt', 'r').read()
+SCHEDULE_SCRIPT = 'schedule.py'
+TOKEN_FILE = 'token.txt'
+DATABASE = 'database.json'
+INTERPRETER_FILE = 'py'
+
+API_TOKEN = open(TOKEN_FILE, 'r').read()
 BOT = Bot(token=API_TOKEN)
 HELLO = 'Приветик.\n\n' \
         'Ты можешь нажать на кнопку, чтобы добавить бота в чат.\n' \
@@ -36,7 +41,8 @@ HAVE_A_GREAT_DAY = 'Удачного дня! :)'
 DEFAULT_MESSAGE = 'Обыкновенное сообщение'
 DEFAULT_TIME = 'datetime.time(hour=14, minute=3)'
 ALREADY_ADDED = 'Бот уже добавлен.\n\n' + SETTINGS
-
+REFRESHING = 'Обновление...'
+PRIMARY_TIME_FORMAT = '%H:%M'
 
 def add_bot_keyboard(link): return [[InlineKeyboardButton(ADD_BOT, url=link)]]
 

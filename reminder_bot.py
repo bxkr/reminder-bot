@@ -34,15 +34,15 @@ async def start_private(message: types.Message):
 
 @dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), filters.ChatTypeFilter('supergroup'))
 async def start_chat(message: types.Message):
-    with open('database.json', 'r+') as db:
+    with open(DATABASE, 'r+') as db:
         dict_f = jload(db.read())
         if str(message.chat.id) in dict_f.keys():
             Data(message.chat.id)
             await message.answer(ALREADY_ADDED, reply_markup=SETTINGS_KEYBOARD)
         else:
             data = Data(message.chat.id)
-            t = eval(data.time).strftime('%H:%M')
-            processes.append(Prompt(['py', 'schedule.py', t, str(message.chat.id)]))
+            t = eval(data.time).strftime(PRIMARY_TIME_FORMAT)
+            processes.append(Prompt([INTERPRETER_FILE, SCHEDULE_SCRIPT, t, str(message.chat.id)]))
             await message.answer(CONGRATS, reply_markup=SETTINGS_KEYBOARD)
 
 
@@ -51,7 +51,7 @@ async def time_set(callback: types.CallbackQuery):
     data = Data(callback.message.chat.id)
     try:
         await callback \
-            .message.edit_text(ENTER_NEW_TIME.format(eval(data.time).strftime('%H:%M')), reply_markup=BACK_KEYBOARD)
+            .message.edit_text(ENTER_NEW_TIME.format(eval(data.time).strftime(PRIMARY_TIME_FORMAT)), reply_markup=BACK_KEYBOARD)
         await callback.answer()
     except exceptions.RetryAfter as exc:
         await callback.answer(RETRY_AFTER.format(exc.timeout))
@@ -112,12 +112,12 @@ async def refresh(callback: types.CallbackQuery):
         await callback.answer()
         message = callback.message.text
         if 'время' in message:
-            await callback.message.edit_text('Обновление...')
+            await callback.message.edit_text(REFRESHING)
             await asyncio.sleep(.2)
             await callback.message. \
-                edit_text(ENTER_NEW_TIME.format(eval(data.time).strftime('%H:%M')), reply_markup=BACK_KEYBOARD)
+                edit_text(ENTER_NEW_TIME.format(eval(data.time).strftime(PRIMARY_TIME_FORMAT)), reply_markup=BACK_KEYBOARD)
         elif 'сообщение' in message:
-            await callback.message.edit_text('Обновление...')
+            await callback.message.edit_text(REFRESHING)
             await asyncio.sleep(.2)
             await callback.message.edit_text(ENTER_NEW_MESSAGE.format(data.message), reply_markup=BACK_KEYBOARD)
     except exceptions.RetryAfter as exc:
@@ -134,14 +134,14 @@ async def set_time(message: types.Message):
     data = Data(message.chat.id)
     if message.get_args() != '':
         try:
-            temporary_time = datetime.datetime.strptime(message.get_args(), '%H:%M')
+            temporary_time = datetime.datetime.strptime(message.get_args(), PRIMARY_TIME_FORMAT)
             data.time = f'datetime.time(hour={temporary_time.hour}, minute={temporary_time.minute})'
             for proc in processes:
                 if proc.args[3] == str(message.chat.id):
                     proc.kill()
-                    processes.append(Prompt(['py', 'schedule.py', message.get_args(), str(message.chat.id)]))
+                    processes.append(Prompt([INTERPRETER_FILE, SCHEDULE_SCRIPT, message.get_args(), str(message.chat.id)]))
                     break
-            await message.answer(TIME_OK.format(eval(data.time).strftime('%H:%M')), reply_markup=CLOSE_KEYBOARD)
+            await message.answer(TIME_OK.format(eval(data.time).strftime(PRIMARY_TIME_FORMAT)), reply_markup=CLOSE_KEYBOARD)
         except ValueError:
             await message.answer(TIME_FORMAT.format(message.get_args()), reply_markup=CLOSE_KEYBOARD)
     else:
@@ -159,13 +159,13 @@ async def set_message(message: types.Message):
 
 
 if __name__ == '__main__':
-    if not exists('database.json'):
-        with open('database.json', 'w') as start_new_file:
+    if not exists(DATABASE):
+        with open(DATABASE, 'w') as start_new_file:
             start_new_file.write('{}')
-    with open('database.json', 'r+') as start_db:
+    with open(DATABASE, 'r+') as start_db:
         start_dict_f = jload(start_db.read())
         for start_chat_id in start_dict_f.keys():
             start_chat_data = start_dict_f[start_chat_id]
-            start_mt = eval(start_chat_data['time']).strftime('%H:%M')
-            processes.append(Prompt(['py', 'schedule.py', start_mt, start_chat_id]))
+            start_mt = eval(start_chat_data['time']).strftime(PRIMARY_TIME_FORMAT)
+            processes.append(Prompt([INTERPRETER_FILE, SCHEDULE_SCRIPT, start_mt, start_chat_id]))
     executor.start_polling(dispatcher=dp, skip_updates=True)

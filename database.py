@@ -8,10 +8,10 @@ class Data:
         self.__dict__['_time'] = DEFAULT_TIME
         self.__dict__['_message'] = DEFAULT_MESSAGE
         self.__dict__['_days'] = [True] * 7
-        db = open('database.json', 'r')
+        db = open(DATABASE, 'r')
         dict_f = json.loads(db.read())
         db.close()
-        db = open('database.json', 'w')
+        db = open(DATABASE, 'w')
         if str(chat) not in dict_f:
             dict_f[self.__dict__['_chat']] = {
                 'message': self.__dict__['_message'],
@@ -23,15 +23,15 @@ class Data:
         db.close()
 
     def __getattr__(self, item):
-        with open('database.json', 'r') as db:
+        with open(DATABASE, 'r') as db:
             dict_f = json.loads(db.read())
             return dict_f[self._chat][str(item)]
 
     def __setattr__(self, key, value):
-        db = open('database.json', 'r+')
+        db = open(DATABASE, 'r+')
         dict_f = json.loads(db.read())
         db.close()
         dict_f[self._chat][key] = value
-        db = open('database.json', 'w')
+        db = open(DATABASE, 'w')
         db.write(json.dumps(dict_f, indent=4))
         db.close()
