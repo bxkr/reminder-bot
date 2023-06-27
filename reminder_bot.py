@@ -32,7 +32,7 @@ async def start_private(message: types.Message):
     await message.answer(HELLO, reply_markup=types.InlineKeyboardMarkup(inline_keyboard=add_bot_keyboard(link)))
 
 
-@dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), filters.ChatTypeFilter('supergroup'))
+@dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), filters.ChatTypeFilter('group'))
 async def start_chat(message: types.Message):
     with open(DATABASE, 'r+') as db:
         dict_f = jload(db.read())

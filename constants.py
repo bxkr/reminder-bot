@@ -4,7 +4,7 @@ from aiogram import Bot
 SCHEDULE_SCRIPT = 'schedule.py'
 TOKEN_FILE = 'token.txt'
 DATABASE = 'database.json'
-INTERPRETER_FILE = 'py'
+INTERPRETER_FILE = 'python3'
 
 API_TOKEN = open(TOKEN_FILE, 'r').read()
 BOT = Bot(token=API_TOKEN)
