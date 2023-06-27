@@ -26,13 +26,13 @@ def marking_up(callback: types.CallbackQuery):
     return days_set_keyboard(data.days)
 
 
-@dp.message_handler(filters.CommandStart(), filters.ChatTypeFilter('private'))
+@dp.message_handler(filters.CommandStart(), filters.ChatTypeFilter(types.ChatType.PRIVATE))
 async def start_private(message: types.Message):
     link = await get_startgroup_link('stay-alive')
     await message.answer(HELLO, reply_markup=types.InlineKeyboardMarkup(inline_keyboard=add_bot_keyboard(link)))
 
 
-@dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), filters.ChatTypeFilter('group'))
+@dp.message_handler(filters.CommandStart(), filters.Regexp('stay-alive'), FILTER_GROUP_OR_SUPERGROUP)
 async def start_chat(message: types.Message):
     with open(DATABASE, 'r+') as db:
         dict_f = jload(db.read())
@@ -124,12 +124,12 @@ async def refresh(callback: types.CallbackQuery):
         await callback.answer(RETRY_AFTER.format(exc.timeout))
 
 
-@dp.message_handler(filters.CommandSettings(), filters.ChatTypeFilter('supergroup'))
+@dp.message_handler(filters.CommandSettings(), FILTER_GROUP_OR_SUPERGROUP)
 async def settings(message: types.Message):
     await message.answer(SETTINGS, reply_markup=SETTINGS_KEYBOARD)
 
 
-@dp.message_handler(filters.Command('set_time'), filters.ChatTypeFilter('supergroup'))
+@dp.message_handler(filters.Command('set_time'), FILTER_GROUP_OR_SUPERGROUP)
 async def set_time(message: types.Message):
     data = Data(message.chat.id)
     if message.get_args() != '':
@@ -148,7 +148,7 @@ async def set_time(message: types.Message):
         await message.reply(TIME_EMPTY, reply_markup=CLOSE_KEYBOARD)
 
 
-@dp.message_handler(filters.Command('set_message'), filters.ChatTypeFilter('supergroup'))
+@dp.message_handler(filters.Command('set_message'), FILTER_GROUP_OR_SUPERGROUP)
 async def set_message(message: types.Message):
     data = Data(message.chat.id)
     if message.get_args() != '':

@@ -1,5 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram import Bot
+from aiogram import Bot, types
 
 SCHEDULE_SCRIPT = 'schedule.py'
 TOKEN_FILE = 'token.txt'
@@ -43,6 +43,7 @@ DEFAULT_TIME = 'datetime.time(hour=14, minute=3)'
 ALREADY_ADDED = 'Бот уже добавлен.\n\n' + SETTINGS
 REFRESHING = 'Обновление...'
 PRIMARY_TIME_FORMAT = '%H:%M'
+FILTER_GROUP_OR_SUPERGROUP = lambda msg: msg.chat.type in [types.ChatType.GROUP, types.ChatType.SUPERGROUP]
 
 def add_bot_keyboard(link): return [[InlineKeyboardButton(ADD_BOT, url=link)]]
 
