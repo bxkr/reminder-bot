@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import logging
 
-from aiogram import Dispatcher, executor, types, filters, exceptions
+from aiogram import Dispatcher, executor, filters, exceptions
 from aiogram.utils.deep_linking import get_startgroup_link
 
 from constants import *
